@@ -46,23 +46,23 @@ namespace jrtplib
 
 struct RTPHeader
 {
-#ifdef RTP_BIG_ENDIAN
-	uint8_t version:2;
-	uint8_t padding:1;
-	uint8_t extension:1;
-	uint8_t csrccount:4;
+	uint8_t firstbyte;
+	uint8_t csrccount() { return (firstbyte) & 0x07; }
+	uint8_t extension() { return (firstbyte >> 4) & 0x01; }
+	uint8_t padding() { return (firstbyte >> 5) & 0x01; }
+	uint8_t version() { return (firstbyte >> 6) & 0x03; }
 	
-	uint8_t marker:1;
-	uint8_t payloadtype:7;
-#else // little endian
-	uint8_t csrccount:4;
-	uint8_t extension:1;
-	uint8_t padding:1;
-	uint8_t version:2;
-	
-	uint8_t payloadtype:7;
-	uint8_t marker:1;
-#endif // RTP_BIG_ENDIAN
+	uint8_t secondbyte;
+	uint8_t payloadtype() { return (secondbyte) & 0x7f; }
+	uint8_t marker() { return (secondbyte >> 7) & 0x01; }
+
+	void set_version(uint8_t version) { firstbyte = (firstbyte   & 0b00111111) | (version << 6); }
+	void set_padding(uint8_t padding) { firstbyte = (firstbyte   & 0b11011111) | (padding << 5); }
+	void set_extension(uint8_t extension) { firstbyte = (firstbyte & 0b11101111) | (extension << 4); }
+	void set_csrccount(uint8_t csrccount) { firstbyte = (firstbyte & 0b11110000) | (csrccount); }
+
+	void set_marker(uint8_t marker) { secondbyte = (secondbyte & 0b01111111) | (marker << 7); }
+	void set_payloadtype(uint8_t payloadtype) { secondbyte = (secondbyte & 0b10000000) | (payloadtype); }
 	
 	uint16_t sequencenumber;
 	uint32_t timestamp;
@@ -82,15 +82,14 @@ struct RTPSourceIdentifier
 
 struct RTCPCommonHeader
 {
-#ifdef RTP_BIG_ENDIAN
-	uint8_t version:2;
-	uint8_t padding:1;
-	uint8_t count:5;
-#else // little endian
-	uint8_t count:5;
-	uint8_t padding:1;
-	uint8_t version:2;
-#endif // RTP_BIG_ENDIAN
+	uint8_t firstbyte;
+	uint8_t count() { return (firstbyte) & 0b00011111; }
+	uint8_t padding() { return (firstbyte >> 5) & 0x01; }
+	uint8_t version() { return (firstbyte >> 6) & 0x03; }
+
+	void set_version(uint8_t version) { firstbyte = (firstbyte & 0b00111111) | (version << 6); }
+	void set_padding(uint8_t padding) { firstbyte = (firstbyte & 0b11011111) | (padding << 5); }
+	void set_count(uint8_t count) { firstbyte = (firstbyte & 0b11100000) | (count); }
 
 	uint8_t packettype;
 	uint16_t length;

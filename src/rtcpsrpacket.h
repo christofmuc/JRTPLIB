@@ -177,7 +177,7 @@ inline int RTCPSRPacket::GetReceptionReportCount() const
 	if (!knownformat)
 		return 0;
 	RTCPCommonHeader *hdr = (RTCPCommonHeader *)data;
-	return ((int)hdr->count);
+	return ((int)hdr->count());
 }
 
 inline RTCPReceiverReport *RTCPSRPacket::GotoReport(int index) const

@@ -92,7 +92,7 @@ inline int RTCPBYEPacket::GetSSRCCount() const
 		return 0;
 
 	RTCPCommonHeader *hdr = (RTCPCommonHeader *)data;
-	return (int)(hdr->count);
+	return (int)(hdr->count());
 }
 
 inline uint32_t RTCPBYEPacket::GetSSRC(int index) const

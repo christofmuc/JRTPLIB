@@ -434,9 +434,9 @@ int RTCPCompoundPacketBuilder::AddBYEPacket(uint32_t *ssrcs,uint8_t numssrcs,con
 
 	RTCPCommonHeader *hdr = (RTCPCommonHeader *)buf;
 
-	hdr->version = 2;
-	hdr->padding = 0;
-	hdr->count = numssrcs;
+	hdr->set_version(2);
+	hdr->set_padding(0);
+	hdr->set_count(numssrcs);
 	
 	numwords = packsize/sizeof(uint32_t);
 	hdr->length = htons((uint16_t)(numwords-1));
@@ -496,9 +496,9 @@ int RTCPCompoundPacketBuilder::AddAPPPacket(uint8_t subtype,uint32_t ssrc,const 
 
 	RTCPCommonHeader *hdr = (RTCPCommonHeader *)buf;
 
-	hdr->version = 2;
-	hdr->padding = 0;
-	hdr->count = subtype;
+	hdr->set_version(2);
+	hdr->set_padding(0);
+	hdr->set_count(subtype);
 	
 	hdr->length = htons((uint16_t)(appdatawords+2));
 	hdr->packettype = RTP_RTCPTYPE_APP;
@@ -603,8 +603,8 @@ int RTCPCompoundPacketBuilder::EndBuild()
 			RTCPCommonHeader *hdr = (RTCPCommonHeader *)curbuf;
 			size_t offset;
 			
-			hdr->version = 2;
-			hdr->padding = 0;
+			hdr->set_version(2);
+			hdr->set_padding(0);
 
 			if (firstpacket && report.isSR)
 			{
@@ -633,7 +633,7 @@ int RTCPCompoundPacketBuilder::EndBuild()
 			size_t numwords = offset/sizeof(uint32_t);
 
 			hdr->length = htons((uint16_t)(numwords-1));
-			hdr->count = count;
+			hdr->set_count(count);
 
 			// add entry in parent's list
 			if (hdr->packettype == RTP_RTCPTYPE_SR)
@@ -667,8 +667,8 @@ int RTCPCompoundPacketBuilder::EndBuild()
 			RTCPCommonHeader *hdr = (RTCPCommonHeader *)curbuf;
 			size_t offset = sizeof(RTCPCommonHeader);
 			
-			hdr->version = 2;
-			hdr->padding = 0;
+			hdr->set_version(2);
+			hdr->set_padding(0);
 			hdr->packettype = RTP_RTCPTYPE_SDES;
 
 			uint8_t sourcecount = 0;
@@ -710,7 +710,7 @@ int RTCPCompoundPacketBuilder::EndBuild()
 
 			size_t numwords = offset/4;
 			
-			hdr->count = sourcecount;
+			hdr->set_count(sourcecount);
 			hdr->length = htons((uint16_t)(numwords-1));
 
 			p = RTPNew(GetMemoryManager(),RTPMEM_TYPE_CLASS_RTCPSDESPACKET) RTCPSDESPacket(curbuf,offset);

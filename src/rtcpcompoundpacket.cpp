@@ -117,7 +117,7 @@ int RTCPCompoundPacket::ParseData(uint8_t *data, size_t datalen)
 		size_t length;
 		
 		rtcphdr = (RTCPCommonHeader *)data;
-		if (rtcphdr->version != RTP_VERSION) // check version
+		if (rtcphdr->version() != RTP_VERSION) // check version
 		{
 			ClearPacketList();
 			return ERR_RTP_RTCPCOMPOUND_INVALIDPACKET;
@@ -144,7 +144,7 @@ int RTCPCompoundPacket::ParseData(uint8_t *data, size_t datalen)
 			return ERR_RTP_RTCPCOMPOUND_INVALIDPACKET;
 		}
 		
-		if (rtcphdr->padding)
+		if (rtcphdr->padding())
 		{
 			// check if it's the last packet
 			if (length != datalen)

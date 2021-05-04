@@ -51,7 +51,7 @@ RTCPAPPPacket::RTCPAPPPacket(uint8_t *data,size_t datalength)
 	size_t len = datalength;
 	
 	hdr = (RTCPCommonHeader *)data;
-	if (hdr->padding)
+	if (hdr->padding())
 	{
 		uint8_t padcount = data[datalength-1];
 		if ((padcount & 0x03) != 0) // not a multiple of four! (see rfc 3550 p 37)

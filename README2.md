@@ -71,8 +71,6 @@ Installation notes
 
     - `RTP_HAVE_SYS_SOCKIO`: Set if `<sys/sockio.h>` exists.
 
-    - `RTP_BIG_ENDIAN`: If set, assume big-endian byte ordering.
-
     - `RTP_SOCKLENTYPE_UINT`: Indicates that getsockname used an unsigned int 
       as its third parameter.
 

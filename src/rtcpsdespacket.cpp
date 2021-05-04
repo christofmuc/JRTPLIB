@@ -52,7 +52,7 @@ RTCPSDESPacket::RTCPSDESPacket(uint8_t *data,size_t datalength)
 	RTCPCommonHeader *hdr = (RTCPCommonHeader *)data;
 	size_t len = datalength;
 	
-	if (hdr->padding)
+	if (hdr->padding())
 	{
 		uint8_t padcount = data[datalength-1];
 		if ((padcount & 0x03) != 0) // not a multiple of four! (see rfc 3550 p 37)
@@ -62,14 +62,14 @@ RTCPSDESPacket::RTCPSDESPacket(uint8_t *data,size_t datalength)
 		len -= (size_t)padcount;
 	}
 	
-	if (hdr->count == 0)
+	if (hdr->count() == 0)
 	{
 		if (len != sizeof(RTCPCommonHeader))
 			return;
 	}
 	else
 	{
-		int ssrccount = (int)(hdr->count);
+		int ssrccount = (int)(hdr->count());
 		uint8_t *chunk;
 		int chunkoffset;
 		

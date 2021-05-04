@@ -156,7 +156,7 @@ inline int RTCPSDESPacket::GetChunkCount() const
 	if (!knownformat)
 		return 0;
 	RTCPCommonHeader *hdr = (RTCPCommonHeader *)data;
-	return ((int)hdr->count);
+	return ((int)hdr->count());
 }
 
 inline bool RTCPSDESPacket::GotoFirstChunk()

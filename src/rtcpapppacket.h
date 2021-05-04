@@ -90,7 +90,7 @@ inline uint8_t RTCPAPPPacket::GetSubType() const
 	if (!knownformat)
 		return 0;
 	RTCPCommonHeader *hdr = (RTCPCommonHeader *)data;
-	return hdr->count;
+	return hdr->count();
 }
 
 inline uint32_t RTCPAPPPacket::GetSSRC() const

@@ -51,7 +51,7 @@ RTCPBYEPacket::RTCPBYEPacket(uint8_t *data,size_t datalength)
 	size_t len = datalength;
 	
 	hdr = (RTCPCommonHeader *)data;
-	if (hdr->padding)
+	if (hdr->padding())
 	{
 		uint8_t padcount = data[datalength-1];
 		if ((padcount & 0x03) != 0) // not a multiple of four! (see rfc 3550 p 37)
@@ -61,7 +61,7 @@ RTCPBYEPacket::RTCPBYEPacket(uint8_t *data,size_t datalength)
 		len -= (size_t)padcount;
 	}
 	
-	size_t ssrclen = ((size_t)(hdr->count))*sizeof(uint32_t) + sizeof(RTCPCommonHeader);
+	size_t ssrclen = ((size_t)(hdr->count()))*sizeof(uint32_t) + sizeof(RTCPCommonHeader);
 	if (ssrclen > len)
 		return;
 	if (ssrclen < len) // there's probably a reason for leaving

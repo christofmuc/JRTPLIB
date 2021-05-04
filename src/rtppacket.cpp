@@ -125,14 +125,14 @@ int RTPPacket::ParseRawPacket(RTPRawPacket &rawpack)
 	rtpheader = (RTPHeader *)packetbytes;
 	
 	// The version number should be correct
-	if (rtpheader->version != RTP_VERSION)
+	if (rtpheader->version() != RTP_VERSION)
 		return ERR_RTP_PACKET_INVALIDPACKET;
 	
 	// We'll check if this is possibly a RTCP packet. For this to be possible
 	// the marker bit and payload type combined should be either an SR or RR
 	// identifier
-	marker = (rtpheader->marker == 0)?false:true;
-	payloadtype = rtpheader->payloadtype;
+	marker = (rtpheader->marker() == 0)?false:true;
+	payloadtype = rtpheader->payloadtype();
 	if (marker)
 	{
 		if (payloadtype == (RTP_RTCPTYPE_SR & 127)) // don't check high bit (this was the marker!!)
@@ -141,10 +141,10 @@ int RTPPacket::ParseRawPacket(RTPRawPacket &rawpack)
 			return ERR_RTP_PACKET_INVALIDPACKET;
 	}
 
-	csrccount = rtpheader->csrccount;
+	csrccount = rtpheader->csrccount();
 	payloadoffset = sizeof(RTPHeader)+(int)(csrccount*sizeof(uint32_t));
 	
-	if (rtpheader->padding) // adjust payload length to take padding into account
+	if (rtpheader->padding()) // adjust payload length to take padding into account
 	{
 		numpadbytes = (int)packetbytes[packetlen-1]; // last byte contains number of padding bytes
 		if (numpadbytes <= 0)
@@ -153,7 +153,7 @@ int RTPPacket::ParseRawPacket(RTPRawPacket &rawpack)
 	else
 		numpadbytes = 0;
 
-	hasextension = (rtpheader->extension == 0)?false:true;
+	hasextension = (rtpheader->extension() == 0)?false:true;
 	if (hasextension) // got header extension
 	{
 		rtpextheader = (RTPExtensionHeader *)(packetbytes+payloadoffset);
@@ -279,18 +279,20 @@ int RTPPacket::BuildPacket(uint8_t payloadtype,const void *payloaddata,size_t pa
 	RTPPacket::extensionlength = ((size_t)extensionlen_numwords)*sizeof(uint32_t);
 	
 	rtphdr = (RTPHeader *)packet;
-	rtphdr->version = RTP_VERSION;
-	rtphdr->padding = 0;
+	rtphdr->firstbyte = 0; 
+	rtphdr->secondbyte = 0;
+	rtphdr->set_version(RTP_VERSION);
+	rtphdr->set_padding(0);
 	if (gotmarker)
-		rtphdr->marker = 1;
+		rtphdr->set_marker(1);
 	else
-		rtphdr->marker = 0;
+		rtphdr->set_marker(0);
 	if (gotextension)
-		rtphdr->extension = 1;
+		rtphdr->set_extension(1);
 	else
-		rtphdr->extension = 0;
-	rtphdr->csrccount = numcsrcs;
-	rtphdr->payloadtype = payloadtype&127; // make sure high bit isn't set
+		rtphdr->set_extension(0);
+	rtphdr->set_csrccount(numcsrcs);
+	rtphdr->set_payloadtype(payloadtype&127); // make sure high bit isn't set
 	rtphdr->sequencenumber = htons(seqnr);
 	rtphdr->timestamp = htonl(timestamp);
 	rtphdr->ssrc = htonl(ssrc);
